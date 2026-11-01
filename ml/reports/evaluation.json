@@ -1,0 +1,147 @@
+{
+  "provider": "extractive",
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "corpus": {
+    "documents": 136,
+    "questions": 75,
+    "seed": 7,
+    "scale": 1.0
+  },
+  "retrieval": {
+    "keyword": {
+      "recall_at_5": 0.556,
+      "mrr": 0.499
+    },
+    "vector": {
+      "recall_at_5": 0.698,
+      "mrr": 0.56
+    },
+    "hybrid": {
+      "recall_at_5": 0.683,
+      "mrr": 0.58
+    },
+    "hybrid+entity": {
+      "recall_at_5": 1.0,
+      "mrr": 0.938
+    }
+  },
+  "answers": {
+    "overall": {
+      "answer_correct": 0.857,
+      "citation_on_gold_page": 0.968,
+      "refusal_correct": 1.0,
+      "leakage_count": 0,
+      "questions": 75
+    },
+    "by_kind": {
+      "contract": {
+        "n": 20,
+        "answer_correct": 0.95,
+        "citation_on_gold_page": 1.0,
+        "refusal_correct": null,
+        "leaked": 0
+      },
+      "injection": {
+        "n": 1,
+        "answer_correct": 1.0,
+        "citation_on_gold_page": 1.0,
+        "refusal_correct": null,
+        "leaked": 0
+      },
+      "invoice": {
+        "n": 24,
+        "answer_correct": 1.0,
+        "citation_on_gold_page": 1.0,
+        "refusal_correct": null,
+        "leaked": 0
+      },
+      "leakage": {
+        "n": 6,
+        "answer_correct": null,
+        "citation_on_gold_page": null,
+        "refusal_correct": 1.0,
+        "leaked": 0
+      },
+      "multilingual": {
+        "n": 4,
+        "answer_correct": 0.0,
+        "citation_on_gold_page": 0.75,
+        "refusal_correct": null,
+        "leaked": 0
+      },
+      "ocr": {
+        "n": 4,
+        "answer_correct": 0.0,
+        "citation_on_gold_page": 1.0,
+        "refusal_correct": null,
+        "leaked": 0
+      },
+      "policy": {
+        "n": 5,
+        "answer_correct": 1.0,
+        "citation_on_gold_page": 0.8,
+        "refusal_correct": null,
+        "leaked": 0
+      },
+      "report": {
+        "n": 5,
+        "answer_correct": 1.0,
+        "citation_on_gold_page": 1.0,
+        "refusal_correct": null,
+        "leaked": 0
+      },
+      "unanswerable": {
+        "n": 6,
+        "answer_correct": null,
+        "citation_on_gold_page": null,
+        "refusal_correct": 1.0,
+        "leaked": 0
+      }
+    }
+  },
+  "understanding": {
+    "classification_accuracy": 1.0,
+    "classified": 135,
+    "confusion": {
+      "invoice": {
+        "invoice": 50
+      },
+      "contract": {
+        "contract": 29
+      },
+      "policy": {
+        "policy": 14
+      },
+      "letter": {
+        "letter": 20
+      },
+      "resume": {
+        "resume": 11
+      },
+      "report": {
+        "report": 11
+      }
+    },
+    "field_accuracy": {
+      "contract.auto_renewal": 1.0,
+      "contract.effective_date": 1.0,
+      "contract.governing_law": 1.0,
+      "contract.parties": 1.0,
+      "contract.termination_notice_days": 1.0,
+      "invoice.customer": 1.0,
+      "invoice.due_date": 1.0,
+      "invoice.invoice_date": 1.0,
+      "invoice.invoice_number": 1.0,
+      "invoice.subtotal": 1.0,
+      "invoice.tax": 1.0,
+      "invoice.total": 1.0,
+      "invoice.vendor": 1.0
+    },
+    "ocr_cer_mean": 0.0155,
+    "ocr_samples": 8
+  },
+  "processing": {
+    "ready": 136
+  },
+  "elapsed_seconds": 6.4
+}
