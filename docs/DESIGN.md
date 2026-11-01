@@ -1,6 +1,6 @@
-# Intelligent Document AI — Design Document (v0.1, for owner review)
+# Intelligent Document AI — Design Document (v1.0)
 
-Status: **DRAFT, awaiting owner approval.** No application code has been written yet. Section 9 lists the decisions that need your answer.
+Status: **Approved by the owner ("build everything") with the recommended defaults in section 9, and implemented.** Section 10 lists the changes made during implementation.
 
 Contents
 1. Product requirements
@@ -256,3 +256,19 @@ erDiagram
 4. **Tesseract OCR** (free, local) instead of a cloud OCR service such as AWS Textract (better on poor scans, about $1.50 per 1,000 pages).
 5. **Reuse Project 1's auth, job queue and app structure** by copying them into this repo, so each project stands alone for recruiters, rather than as a shared package.
 6. **Frontend stack** identical to Project 1 (Vite + React + TypeScript + Tailwind + TanStack Query).
+
+---
+
+## 10. Changes made during implementation
+
+| Area | Design | Built | Why |
+|---|---|---|---|
+| AI model | Owner to choose | Provider-neutral: Claude (`claude-opus-5-5`, configurable) when `ANTHROPIC_API_KEY` is set, otherwise offline extractive | Owner approved the recommended defaults; no key was available during development, so every reported number is from offline mode |
+| Retrieval | Hybrid search, then the LLM | Hybrid search **plus an entity filter**: codes and names in the question must appear in the document | The first evaluation answered "INV-99999?" from *another* invoice: grounded, but wrong. Refusal accuracy went from 0.083 to 1.0 and answer correctness from 0.016 to 0.857 (together with the two fixes below) |
+| Sentence splitting | Regex on `.!?` | Split only before whitespace and a capital letter, or at newlines | The original split "1,234.56" in two, losing every amount |
+| Keyword query | Sanitised terms | Hyphenated codes split into parts (`INV-20260003` → `inv \| 20260003`) | Matches how PostgreSQL indexes them; invoice numbers previously never matched |
+| Vector search | HNSW index scan | Exact scan over the user's allowed chunks | Approximate scans filter after the search and can silently return nothing under access control |
+| Answer streaming | Server-Sent Events | Single JSON response | Offline answers take about 50 ms; streaming is listed in known limitations |
+| Worker threads | Library defaults | `DOCAI_EMBEDDING_THREADS=2`, `OMP_THREAD_LIMIT=1` in the image | Measured 11 min → 19 s for the demo library in docker compose |
+| Evaluation labels | Generated questions | Policy questions rewritten to be specific ("How many days per week may employees work remotely?"); scans accepted as equivalent to their originals | The original wording ("what is the key limit?") was ambiguous; citing the scan of the same invoice is correct |
+| S3 versioning | 90-day retention of old versions | 7 days | Deleted documents shouldn't linger |
