@@ -14,6 +14,7 @@ from app.ai.base import AnswerResult, CitedSentence, Passage
 from app.ai.textutil import extractive_summary, identifiers, overlap_score, sentences, terms
 
 # Words that appear in many questions but say little about which sentence answers them.
+FOLLOW_UP_PRONOUNS = frozenset({"it", "its", "they", "them", "their", "that", "this", "those", "these", "he", "she"})
 GENERIC = frozenset({"document", "according", "mentioned", "key", "limit", "requirement", "letter", "invoice"})
 
 
@@ -58,15 +59,21 @@ class ExtractiveProvider:
         return AnswerResult(status="answered", sentences=chosen, provider=self.name)
 
     def rewrite_question(self, question: str, history: list[tuple[str, str]]) -> str:
-        """Offline follow-up handling: append key terms of the previous user question
-        when the new one is short and pronoun-led ("and when does it expire?")."""
+        """Offline follow-up handling. Only questions that *refer back* ("and when does it
+        expire?", "what about that contract?") borrow key terms from the previous question;
+        a self-contained question ("Who is the CEO of Zephyr Dynamics?") is left alone."""
         if not history:
             return question
+        words = re.findall(r"[a-z']+", question.lower())
+        refers_back = bool(words) and (
+            words[0] in {"and", "also"}
+            or " ".join(words[:2]) == "what about"
+            or any(w in FOLLOW_UP_PRONOUNS for w in words)
+        )
+        if not refers_back or identifiers(question):
+            return question
         prev_user = next((t for role, t in reversed(history) if role == "user"), "")
-        lead = question.strip().lower().split(" ")[0] if question.strip() else ""
-        if len(question.split()) <= 8 and lead in {"and", "what", "when", "how", "it", "its", "who", "where", "which"}:
-            return f"{question} {' '.join(terms(prev_user)[:6])}"
-        return question
+        return f"{question} {' '.join(identifiers(prev_user) or terms(prev_user)[:6])}"
 
     def summarize(self, text: str) -> tuple[str, str] | None:
         return extractive_summary(text), "rule:extractive-summary"

@@ -180,7 +180,12 @@ def overlap_score(query_terms: set[str], text: str) -> float:
 
 def extractive_summary(text: str, max_sentences: int = 3) -> str:
     """Pick the most central sentences (word-frequency scoring), in original order."""
-    sents = [s for _, _, s in sentences(text) if 30 <= len(s) <= 400]
+    # Skip table rows (Markdown "|" or mostly numbers): they make poor summaries.
+    sents = [
+        s
+        for _, _, s in sentences(text)
+        if 30 <= len(s) <= 400 and "|" not in s and sum(ch.isalpha() for ch in s) / len(s) > 0.6
+    ]
     if not sents:
         return text[:300].strip()
     freq = Counter(terms(text))

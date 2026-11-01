@@ -37,7 +37,10 @@ class Embedder:
             if self._model is None:
                 from fastembed import TextEmbedding
 
-                self._model = TextEmbedding(self.model_name)
+                s = get_settings()
+                self._model = TextEmbedding(
+                    self.model_name, cache_dir=s.embedding_cache_dir, threads=s.embedding_threads
+                )
             return self._model
 
     def passages(self, texts: list[str]) -> list[list[float]]:
