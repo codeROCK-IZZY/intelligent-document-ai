@@ -258,3 +258,29 @@ def test_claude_structured_extraction():
         "claude:claude-opus-5-5",
     )
     assert fake.calls[0]["output_config"]["format"]["type"] == "json_schema"
+
+
+def test_follow_up_rewrite_only_when_question_refers_back():
+    hist = [("user", "What is the total due on invoice INV-20260003?"), ("assistant", "Total Due: 1.00")]
+    p = ExtractiveProvider()
+    assert p.rewrite_question("Who is the CEO of Zephyr Dynamics?", hist) == "Who is the CEO of Zephyr Dynamics?"
+    assert p.rewrite_question("and when is it due?", hist).endswith("INV-20260003")
+
+
+def test_summary_skips_table_rows():
+    from app.ai.textutil import extractive_summary
+
+    text = (
+        "This invoice covers consulting services delivered to Acme Robotics in February.\n"
+        "| Consulting hours | 9 | 125.00 | 1,125.00 |\nConsulting hours 9 125.00 1,125.00 450.00 1,393.00\n"
+        "Payment is due within sixty days of the invoice date shown above."
+    )
+    s = extractive_summary(text)
+    assert "|" not in s and "1,125.00" not in s and "consulting services" in s
+
+
+def test_organisation_entities_do_not_span_lines():
+    ents = u.extract_entities(
+        [(1, "Description Qty Unit Price Amount\nConsulting hours 9\nFrom: Granite Analytics Ltd.")]
+    )
+    assert [e["value"] for e in ents if e["entity_type"] == "organization"] == ["Granite Analytics Ltd."]

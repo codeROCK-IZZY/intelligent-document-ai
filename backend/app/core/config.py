@@ -45,6 +45,10 @@ class Settings(BaseSettings):
     claude_fallbacks: bool = True
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     embedding_dim: int = 384
+    embedding_cache_dir: str | None = None  # baked into the Docker image at build time
+    # ONNX Runtime threads per process. Default (all cores) oversubscribes the CPU when the API
+    # and worker run side by side — measured ~10x slower in docker compose. None = library default.
+    embedding_threads: int | None = None
     ocr_languages: str = "eng+fra+spa"
 
     # --- retrieval ---

@@ -137,8 +137,9 @@ DATE_RE = re.compile(
 )
 MONEY_RE = re.compile(r"(?:(USD|EUR|GBP|\$|€|£)\s?)(\d{1,3}(?:,\d{3})*(?:\.\d{2})|\d+\.\d{2})")
 EMAIL_RE = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b")
+# Organisation names: capitalised words on ONE line followed by a legal suffix and a word boundary.
 ORG_RE = re.compile(
-    r"\b([A-Z][\w&'-]*(?:\s+[A-Z][\w&'-]*){0,4}\s+(?:Inc|LLC|Ltd|GmbH|Corp|Corporation|S\.A\.|SAS|SARL|Co)\.?)"
+    r"\b([A-Z][\w&'-]*(?:[ \t]+[A-Z][\w&'-]*){0,4}[ \t]+(?:Inc|LLC|Ltd|GmbH|Corp|Corporation|S\.A\.|SAS|SARL|Co)\b\.?)"
 )
 CURRENCY = {"$": "USD", "€": "EUR", "£": "GBP", "USD": "USD", "EUR": "EUR", "GBP": "GBP"}
 
