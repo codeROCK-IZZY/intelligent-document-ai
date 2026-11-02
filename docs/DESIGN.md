@@ -1,6 +1,6 @@
 # Intelligent Document AI — Design Document (v1.0)
 
-Status: **Approved by the owner ("build everything") with the recommended defaults in section 9, and implemented.** Section 10 lists the changes made during implementation.
+Status: **Implemented** with the decisions in section 9. Section 10 lists the changes made during implementation.
 
 Contents
 1. Product requirements
@@ -11,7 +11,7 @@ Contents
 6. API specification
 7. Security and access control
 8. Evaluation strategy and implementation roadmap
-9. Decisions that need your approval
+9. Key design decisions
 
 ---
 
@@ -60,7 +60,7 @@ Handwriting recognition, e-signature, real-time collaborative editing, connector
 
 ## 2. Architecture
 
-Same proven shape as Project 1: **one FastAPI codebase, run as an API process and a worker process**, with PostgreSQL as both the database and the job queue. pgvector adds vector search, so there is still only one data store.
+Same proven shape as the AI Predictive Maintenance platform: **one FastAPI codebase, run as an API process and a worker process**, with PostgreSQL as both the database and the job queue. pgvector adds vector search, so there is still only one data store.
 
 ```mermaid
 flowchart LR
@@ -166,7 +166,7 @@ erDiagram
 
 | Table | Key columns | Notes |
 |---|---|---|
-| `users`, `refresh_tokens`, `audit_log`, `jobs` | as Project 1 | Proven auth and queue code reused |
+| `users`, `refresh_tokens`, `audit_log`, `jobs` | as in the AI Predictive Maintenance platform | Proven auth and queue code reused |
 | `collections` | id, owner_id, name | Folders/categories |
 | `documents` | id, owner_id, collection_id, title, doc_type, doc_type_source (`model`/`rule`/`user`), current_version_id, created_at | Logical document |
 | `document_shares` | document_id, user_id, permission (`read`/`edit`) | PK (document_id, user_id) |
@@ -185,7 +185,7 @@ erDiagram
 
 | Method & path | Purpose |
 |---|---|
-| `POST /auth/login` · `/refresh` · `/logout` · `GET /auth/me` | As Project 1 |
+| `POST /auth/login` · `/refresh` · `/logout` · `GET /auth/me` | As in the AI Predictive Maintenance platform |
 | `POST /documents` (multipart) | Upload → 202 with document and processing status |
 | `GET /documents?q=&type=&collection=&from=&to=` | List/filter documents the caller can read |
 | `GET /documents/{id}` · `DELETE /documents/{id}` | Detail incl. processing stages; delete (owner only) |
@@ -226,7 +226,7 @@ erDiagram
 ### 8.2 Roadmap
 | # | Milestone | Deliverables |
 |---|---|---|
-| M0 | Foundation | Repo, Docker Compose (Postgres + pgvector, api, worker, web), CI, auth and job queue ported from Project 1 |
+| M0 | Foundation | Repo, Docker Compose (Postgres + pgvector, api, worker, web), CI, auth and job queue ported from the AI Predictive Maintenance platform |
 | M1 | Documents & storage | Upload validation, versions, collections, sharing, `readable_documents`, leakage tests |
 | M2 | Extraction pipeline | PDF/DOCX/TXT text and tables, OCR, language detection, per-stage status/retries |
 | M3 | Synthetic corpus | Generator for documents + labelled question set |
@@ -239,7 +239,7 @@ erDiagram
 
 ---
 
-## 9. Decisions that need your approval
+## 9. Key design decisions
 
 1. **AI model for answers, summaries and extraction.** These are approximate per-question costs, assuming about 6,000 tokens of passages in and 500 tokens out:
 
@@ -254,8 +254,8 @@ erDiagram
 2. **PostgreSQL + pgvector** instead of a separate vector database (§2).
 3. **Local embeddings** (`bge-small-en-v1.5` via fastembed: free, CPU, offline).
 4. **Tesseract OCR** (free, local) instead of a cloud OCR service such as AWS Textract (better on poor scans, about $1.50 per 1,000 pages).
-5. **Reuse Project 1's auth, job queue and app structure** by copying them into this repo, so each project stands alone for recruiters, rather than as a shared package.
-6. **Frontend stack** identical to Project 1 (Vite + React + TypeScript + Tailwind + TanStack Query).
+5. **Reuse the AI Predictive Maintenance platform's auth, job queue and app structure** by copying them into this repo, so the repository is self-contained, rather than depending on a shared package.
+6. **Frontend stack** identical to the AI Predictive Maintenance platform (Vite + React + TypeScript + Tailwind + TanStack Query).
 
 ---
 

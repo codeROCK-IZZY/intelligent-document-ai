@@ -19,7 +19,7 @@
 
 ## Platform
 - **Answers are not streamed** (no Server-Sent Events, which the design proposed). The full answer returns in one response. Offline mode takes about 50 ms; Claude takes seconds.
-- **Login rate limiter is per process** (as in Project 1).
+- **Login rate limiter is per process** (as in the AI Predictive Maintenance platform).
 - **Uploads are held in memory** up to the 25 MB limit before validation.
 - **Deleted documents** are removed from the database immediately. On AWS the original file stays recoverable in the versioned S3 bucket for 7 days.
 - **Docker image size** is about 1.06 GB (ONNX Runtime, Tesseract language data, the embedding model).
@@ -27,4 +27,4 @@
 ## Testing and infrastructure
 - **S3 file storage** is not covered by automated tests and has not been run against real AWS.
 - **Terraform has not been applied**, and was not validated locally (CI runs `fmt -check` and `validate`).
-- **No license file yet.** The owner should choose one.
+- **No license file yet.** A license will be added.
