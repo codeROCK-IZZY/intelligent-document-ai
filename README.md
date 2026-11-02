@@ -2,6 +2,22 @@
 
 Upload PDFs, Word files, text and scanned images. The platform reads them (OCR for scans), classifies them, extracts key fields, and answers questions **only from your documents, with citations to the exact page and passage**. When the documents don't contain the answer, it says so. One user's documents are never visible to another unless explicitly shared.
 
+## The problem
+
+Organisations keep invoices, contracts, policies and reports as PDFs, Word files and scans. Finding one
+figure or clause means opening files one by one, key data is re-typed by hand, and general-purpose AI
+chatbots answer confidently even when the document says something different, which is unacceptable for
+finance, legal and compliance work.
+
+## What this platform does
+
+- Reads any document, including scanned pages (OCR), and classifies it automatically (invoice, contract, policy, report…).
+- Extracts structured fields such as invoice totals, due dates and contract parties, and **checks** them (line items add up to the total, due date after issue date, missing fields flagged).
+- Answers plain-English questions **only from the user's own documents**, citing the exact page and passage, and says "not found" instead of guessing.
+- Keeps each person's documents private unless shared, compares versions and detects duplicates.
+
+**Who it is for:** finance, legal, operations and compliance teams working with large document volumes.
+
 **Stack:** Python 3.13 · FastAPI · PostgreSQL 16 + pgvector · Tesseract OCR · local embeddings (bge-small, ONNX) · Claude API with native citations (optional) · React 18 + TypeScript · Docker · Terraform (AWS ECS + RDS + S3) · GitHub Actions
 
 ![Grounded answers with citations](docs/screenshots/ask.png)
